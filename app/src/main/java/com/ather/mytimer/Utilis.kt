@@ -10,5 +10,10 @@ class Utilis {
         val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
         return formatter.format(currentTime)
         }
+
+        fun getFormattedDateInString(timeInMillis: Long, format: String): String {
+            val sdf = SimpleDateFormat(format, Locale.getDefault())
+            return sdf.format(timeInMillis)
+        }
     }
 }

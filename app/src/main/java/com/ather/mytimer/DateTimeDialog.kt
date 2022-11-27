@@ -4,49 +4,53 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.widget.TextView
+import java.text.SimpleDateFormat
 import java.util.*
 
-class DateTimeDialog(private val context: Context,
-                     private var dateTime: String) {
+class DateTimeDialog(private val context: Context) {
     var date_time = ""
-    var mYear = 0
-    var mMonth = 0
-    var mDay = 0
+    private var hour: Int = 0
+    private var minute: Int = 0
+    private val myCalendar = Calendar.getInstance()
 
-    var mHour = 0
-    var mMinute = 0
+    fun newDatePicker(textView: TextView, mStartTime: (time:String,miniseconds: Long) -> Unit){
+        val datePickerDialog = DatePickerDialog(
+            context, { view, year, monthOfYear, dayOfMonth ->
+                date_time = Utilis.getFormattedDateInString(myCalendar.timeInMillis, "dd/MM/YYYY")
 
-     fun datePicker(textView: TextView) {
-        // Get Current Date
-        val c: Calendar = Calendar.getInstance()
-        mYear = c.get(Calendar.YEAR)
-        mMonth = c.get(Calendar.MONTH)
-        mDay = c.get(Calendar.DAY_OF_MONTH)
-        val datePickerDialog = DatePickerDialog(context,
-            { view, year, monthOfYear, dayOfMonth ->
-                date_time = dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year
-                //*************Call Time Picker Here ********************
-                tiemPicker(textView)
-            }, mYear, mMonth, mDay
+                //Call Time Picker Here
+                newTimePicker(textView, mStartTime)
+            }, myCalendar.get(Calendar.YEAR),
+            myCalendar.get(Calendar.MONTH),
+            myCalendar.get(Calendar.DAY_OF_MONTH)
         )
+        datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
         datePickerDialog.show()
     }
 
-     fun tiemPicker(textView: TextView) {
-        // Get Current Time
-        val c = Calendar.getInstance()
-        mHour = c[Calendar.HOUR_OF_DAY]
-        mMinute = c[Calendar.MINUTE]
-
-        // Launch Time Picker Dialog
+    private fun newTimePicker(textView: TextView,
+                              mStartTime: (time: String,
+                                           miniseconds: Long) -> Unit) {
         val timePickerDialog = TimePickerDialog(context,
-            { view, hourOfDay, minute ->
-                mHour = hourOfDay
-                mMinute = minute
-                textView.text = "$date_time $hourOfDay:$minute"
-                dateTime = "$hourOfDay:$minute"
-            }, mHour, mMinute, false
-        )
+                TimePickerDialog.OnTimeSetListener(function = { _, hour, minute ->
+                    myCalendar.set(Calendar.HOUR_OF_DAY, hour)
+                    myCalendar.set(Calendar.MINUTE, minute)
+                    myCalendar.set(Calendar.SECOND, 0)
+
+                    textView.text = "$date_time $hour:$minute"
+
+                    val currentTime = Calendar.getInstance().time
+                    val endDateDay = "$date_time $hour:$minute" /*"03/02/2020 21:00:00"*/
+                    val format1 = SimpleDateFormat("dd/MM/yyyy hh:mm",
+                        Locale.getDefault()
+                    )
+                    val endDate = format1.parse(endDateDay)
+
+                    //milliseconds
+                    val different = endDate.time - currentTime.time
+                    mStartTime.invoke( "$hour:$minute", different)
+                }), hour, minute,false
+            )
         timePickerDialog.show()
     }
 }

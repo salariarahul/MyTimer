@@ -1,7 +1,6 @@
 package com.ather.mytimer
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -21,19 +20,13 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
    private var mStartTime: String=""
-    private var mEndTime: String=""
-
-    var START_MILLI_SECONDS = 60000L
-
-    lateinit var countdown_timer: CountDownTimer
-    var isRunning: Boolean = false;
-    var time_in_milli_seconds = 0L
+    private var mMiliseconds: Long=0L
 
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.activity = this
 
         initViews()
@@ -55,10 +48,6 @@ class MainActivity : AppCompatActivity() {
                 MyPreference(this).darkMode = 0
                 delegate.applyDayNight()
         } }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     private fun checkTheme() {
@@ -102,7 +91,6 @@ class MainActivity : AppCompatActivity() {
             binding.tvTaskName.visibility = View.VISIBLE
             binding.tvStartEndTime.visibility = View.VISIBLE
 
-
         }else{
             //Visible Rv and gone view.
             binding.ivArrow.setImageDrawable(resources.getDrawable(R.drawable.ic_arrow_down))
@@ -116,7 +104,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showCustomDialog() {
         var finalModal : TaskModal? = null
-
+        mStartTime = ""
+        mMiliseconds = 0L
         val dialogBinding: DialogScheduleTaskBinding? =
             DataBindingUtil.inflate(
                 LayoutInflater.from(this),
@@ -132,35 +121,32 @@ class MainActivity : AppCompatActivity() {
         }.show()
 
         dialogBinding?.tvStartTime?.setOnClickListener {
-            DateTimeDialog(this, mStartTime).datePicker(dialogBinding?.tvStartTimeData!!)
-        }
-
-        dialogBinding?.tvEndTime?.setOnClickListener {
-            DateTimeDialog(this, mEndTime).datePicker(dialogBinding?.tvEndTimeData!!)
+            DateTimeDialog(this).newDatePicker(dialogBinding?.tvStartTimeData!!) {
+                    time, miliSeonds ->
+                mStartTime = time
+                mMiliseconds = miliSeonds
+            }
         }
 
         dialogBinding?.btnCreate?.setOnClickListener {
-
             val modalNew = MyPreference(this).getList()
+
             if(TextUtils.isEmpty(dialogBinding.editTaskName.text)){
                 Toast.makeText(this, "Please enter task name.",
                     Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             if(TextUtils.isEmpty(dialogBinding.tvStartTimeData.text) ||
                 dialogBinding.tvStartTimeData.text == "0"){
                 Toast.makeText(this, "Please select Start time.",
                     Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if(TextUtils.isEmpty(dialogBinding.tvEndTimeData.text) ||
-                dialogBinding.tvEndTimeData.text == "0"){
-                Toast.makeText(this, "Please select End time.",
-                    Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            finalModal = TaskModal(dialogBinding.editTaskName.text.toString().trim(),
-            mStartTime, mEndTime)
+
+            finalModal = TaskModal(
+                dialogBinding.editTaskName.text.toString().trim(),
+                mStartTime, mMiliseconds)
 
             if (!modalNew.isNullOrEmpty()) {
                 modalNew.add(finalModal!!)
@@ -172,6 +158,7 @@ class MainActivity : AppCompatActivity() {
             }
             customDialog.dismiss()
             setAdapter()
+
             Toast.makeText(this, "Task Created", Toast.LENGTH_SHORT).show()
         }
     }
@@ -180,7 +167,8 @@ class MainActivity : AppCompatActivity() {
         val list = MyPreference(this).getList()
         if (!list.isNullOrEmpty()) {
             binding.tvTaskName.text = list.get(0).taskName
-            binding.tvStartEndTime.text = list.get(0).startTime + "-" +list.get(0).endTime
+            binding.tvStartEndTime.text = list.get(0).startTime /*+ "-" +list.get(0).endTime*/
+            MyCountDownTimer(binding).startTimer(list.get(0).timeDifference)
 
             val adapter = TaskAdapter(this, list) {
                 //on Item click.
@@ -188,40 +176,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             val linearLayoutManager = LinearLayoutManager(this)
-
             linearLayoutManager.orientation = RecyclerView.VERTICAL
-
             binding.rvTasks.layoutManager = linearLayoutManager
             binding.rvTasks.addItemDecoration(DividerItemDecoration(this,
                 linearLayoutManager.orientation))
             binding.rvTasks.adapter = adapter
+
         }
     }
-
- /*   private fun startTimer(time_in_seconds: Long) {
-        countdown_timer = object : CountDownTimer(time_in_seconds, 1000) {
-            override fun onFinish() {
-                textView.setText("done!")
-            }
-
-            override fun onTick(p0: Long) {
-                time_in_milli_seconds = p0
-                updateTextUI()
-            }
-        }
-        countdown_timer.start()
-
-        isRunning = true
-        button.text = "Pause"
-        reset.visibility = View.INVISIBLE
-
-    }
-
-    private fun updateTextUI() {
-        val minute = (time_in_milli_seconds / 1000) / 60
-        val seconds = (time_in_milli_seconds / 1000) % 60
-
-        timer.text = "$minute:$seconds"
-    }*/
-
 }
