@@ -3,8 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_arrow_down.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_arrow_up.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_bedtime.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_timer.xml" value="0.1125" />
         <entry key="app/src/main/res/drawable/my_btn_toggle.xml" value="0.147" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.15512465373961218" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.18282548476454294" />
+        <entry key="app/src/main/res/layout/dialog_schedule_task.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/item_tasks.xml" value="0.165" />
       </map>
     </option>
   </component>
