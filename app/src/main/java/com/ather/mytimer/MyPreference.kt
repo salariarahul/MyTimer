@@ -38,6 +38,7 @@ class MyPreference(context: Context?) {
     fun setList(list: ArrayList<TaskModal>){
         val editor = preferences.edit()
         val gson = Gson()
+
         val json: String = gson.toJson(list)
         editor.putString(LIST_TAG, json)
         editor.apply()

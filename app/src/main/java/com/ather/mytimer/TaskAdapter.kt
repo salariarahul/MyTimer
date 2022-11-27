@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ather.mytimer.databinding.ItemTasksBinding
 
 class TaskAdapter(val context: Context,
-                  var list: ArrayList<TaskModal>,
+                  var list: List<TaskModal>,
                   val mCallback: (position:Int) -> Unit):
     RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
@@ -34,6 +34,6 @@ class TaskAdapter(val context: Context,
        val binding: ItemTasksBinding,
        val viewType: Int,
         context: Context,
-        list: ArrayList<TaskModal>
+        list: List<TaskModal>
     ): RecyclerView.ViewHolder(root) {}
 }

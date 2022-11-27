@@ -1,8 +1,10 @@
 package com.ather.mytimer
 
+import java.util.*
+
 data class TaskModal (
     var taskName: String,
     var startTime: String,
-    var timeDifference: Long
+    var date: Date
   /*  var endTime: String*/
 )

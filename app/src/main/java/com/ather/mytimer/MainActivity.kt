@@ -15,12 +15,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ather.mytimer.databinding.ActivityMainBinding
 import com.ather.mytimer.databinding.DialogScheduleTaskBinding
+import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
    private var mStartTime: String=""
-    private var mMiliseconds: Long=0L
+    private var mDate: Date? = null
+
+    companion object{
+        var isRunning = false
+        var isDifference = false
+    }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -31,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         initViews()
         checkTheme()
+        setAdapter()
     }
 
     private fun initViews() {
@@ -105,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     private fun showCustomDialog() {
         var finalModal : TaskModal? = null
         mStartTime = ""
-        mMiliseconds = 0L
+        mDate = null
         val dialogBinding: DialogScheduleTaskBinding? =
             DataBindingUtil.inflate(
                 LayoutInflater.from(this),
@@ -122,9 +130,9 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding?.tvStartTime?.setOnClickListener {
             DateTimeDialog(this).newDatePicker(dialogBinding?.tvStartTimeData!!) {
-                    time, miliSeonds ->
+                    time, date ->
                 mStartTime = time
-                mMiliseconds = miliSeonds
+                mDate = date
             }
         }
 
@@ -146,7 +154,8 @@ class MainActivity : AppCompatActivity() {
 
             finalModal = TaskModal(
                 dialogBinding.editTaskName.text.toString().trim(),
-                mStartTime, mMiliseconds)
+                mStartTime, mDate!!
+            )
 
             if (!modalNew.isNullOrEmpty()) {
                 modalNew.add(finalModal!!)
@@ -164,11 +173,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setAdapter() {
-        val list = MyPreference(this).getList()
+        val list = MyPreference(this).getList().sortedBy { it.date.time }
         if (!list.isNullOrEmpty()) {
-            binding.tvTaskName.text = list.get(0).taskName
-            binding.tvStartEndTime.text = list.get(0).startTime /*+ "-" +list.get(0).endTime*/
-            MyCountDownTimer(binding).startTimer(list.get(0).timeDifference)
+            list.forEachIndexed { index, it ->
+                binding.tvTaskName.text = it.taskName
+                binding.tvStartEndTime.text = it.startTime
+                //milliseconds Difference.
+                val currentTime = Calendar.getInstance().time
+                val difference = it.date.time - currentTime.time
+                var nextDiff = 0L
+
+
+
+                if (difference > 0 ) {
+                    if (!isRunning){
+                        isRunning = true
+                    MyCountDownTimer(binding).startTimer(this, difference, it, nextDiff) {
+                        isRunning = it
+                        isDifference = false
+                        setAdapter()
+                    }
+                    }
+                    if (list.size > index+1){
+                        nextDiff = list.get(index +1).date.time - it.date.time
+                        //Next task time difference
+                        if (nextDiff > 0 && !isDifference) {
+                            isDifference = true
+                            binding.tvRemainingTiming.text =
+                                "Next task's ${Utilis.getNextDifference(nextDiff)}"
+                        }
+                    }
+                    return@forEachIndexed
+                }
+            }
 
             val adapter = TaskAdapter(this, list) {
                 //on Item click.
