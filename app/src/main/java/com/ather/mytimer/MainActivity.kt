@@ -19,7 +19,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
-
 class MainActivity : AppCompatActivity() {
    private var mStartTime: String=""
     private var mDate: Date? = null
@@ -38,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         initViews()
         checkTheme()
+    }
+
+    override fun onResume() {
+        super.onResume()
         setAdapter()
     }
 
@@ -55,7 +58,10 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 MyPreference(this).darkMode = 0
                 delegate.applyDayNight()
-        } }
+        }
+            isRunning = false
+            isDifference = false
+        }
     }
 
     private fun checkTheme() {
@@ -176,19 +182,17 @@ class MainActivity : AppCompatActivity() {
         val list = MyPreference(this).getList().sortedBy { it.date.time }
         if (!list.isNullOrEmpty()) {
             list.forEachIndexed { index, it ->
-                binding.tvTaskName.text = it.taskName
-                binding.tvStartEndTime.text = it.startTime
-                //milliseconds Difference.
+                 //milliseconds Difference.
                 val currentTime = Calendar.getInstance().time
                 val difference = it.date.time - currentTime.time
                 var nextDiff = 0L
 
-
-
                 if (difference > 0 ) {
                     if (!isRunning){
                         isRunning = true
-                    MyCountDownTimer(binding).startTimer(this, difference, it, nextDiff) {
+                        binding.tvTaskName.text = it.taskName
+                        binding.tvStartEndTime.text = it.startTime
+                        MyCountDownTimer(binding).startTimer(this, difference, it, nextDiff) {
                         isRunning = it
                         isDifference = false
                         setAdapter()
@@ -220,5 +224,12 @@ class MainActivity : AppCompatActivity() {
             binding.rvTasks.adapter = adapter
 
         }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isRunning = false
+        isDifference = false
     }
 }
