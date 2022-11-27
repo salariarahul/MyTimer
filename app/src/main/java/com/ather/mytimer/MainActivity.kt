@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                         if (nextDiff > 0 && !isDifference) {
                             isDifference = true
                             binding.tvRemainingTiming.text =
-                                "Next task's ${Utilis.getNextDifference(nextDiff)}"
+                                "Next task time \n difference \n ${Utilis.getNextDifference(nextDiff)}"
                         }
                     }
                     return@forEachIndexed

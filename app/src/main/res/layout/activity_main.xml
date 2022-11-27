@@ -78,7 +78,6 @@
                 android:layout_width="240dp"
                 android:layout_height="240dp"
                 android:layout_centerInParent="true"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="36dp"
                 android:background="@drawable/drawable_circle_dark_blue"
                 android:indeterminate="false"
@@ -104,21 +103,22 @@
                 android:id="@+id/tvRemainingTiming"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 hour"
-                android:textSize="16sp"
-                android:layout_marginTop="12dp"
-                android:textStyle="bold"
+                android:layout_below="@+id/tvTimer"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="0 hour"
                 android:textColor="@color/daynight_textcolor"
-                android:layout_below="@+id/tvTimer"
-                />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/tvTimer"
+                android:gravity="center"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
@@ -207,8 +207,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintLeft_toRightOf="@+id/ivIcon"
                         app:layout_constraintStart_toEndOf="@+id/ivIcon"
-                        app:layout_constraintTop_toBottomOf="@+id/ivArrow"
-                        />
+                        app:layout_constraintTop_toBottomOf="@+id/ivArrow" />
 
                     <TextView
                         android:id="@+id/tvStartEndTime"

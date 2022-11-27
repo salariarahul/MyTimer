@@ -33,7 +33,7 @@ class MyCountDownTimer(val binding: ActivityMainBinding) {
         countdown_timer.start()
 
         isRunning = true
-        binding.tvStatus.text = "${taskModal.taskName} task"
+        binding.tvStatus.text = "Current Task \n ${taskModal.taskName}"
      }
 
     private fun updateTextUI(nextDiff: Long) {
